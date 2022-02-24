@@ -4,102 +4,113 @@ const PickupTab = ({work}) => {
 	const workArray = [
 		{
 			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
-			type: "Grocery"
-		},
-		{
-			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
-			type: "Grocery"
-		},
-		{
-			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
-			type: "Bulky"
-		},
-		{
-			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
-			type: "Bulky"
+			orders:[
+				{
+					order_id:1,
+					name:"bob",
+					date: new Date(),
+					items:[
+						{
+							dpci:"1",
+							quantity:5,
+							type:"cooler"
 
+						},
+						{
+							dpci:"2",
+							quantity:5,
+							type:"freezer"
+						},
+						{
+							dpci:"3",
+							quantity:5,
+							type:"dry"
+						}
+					]
+				},
+				{
+					order_id:2,
+					name:"bobbt",
+					date: new Date(),
+					items:[
+						{
+							dpci:"1",
+							quantity:5,
+							type:"cooler"
+
+						},
+						{
+							dpci:"2",
+							quantity:5,
+							type:"freezer"
+						},
+						{
+							dpci:"3",
+							quantity:5,
+							type:"dry"
+						}
+					]
+				}
+			],
+			type: "Grocery"
 		},
 		{
-			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
+			id: 2,
+			orders:[
+				{
+					order_id:1,
+					name:"bob",
+					date:new Date(),
+					items:[
+						{
+							dpci:"1",
+							quantity:5,
+							type:"regular"
+
+						},
+						{
+							dpci:"2",
+							quantity:5,
+							type:"regular"
+						},
+						{
+							dpci:"3",
+							quantity:5,
+							type:"regular"
+						}
+					]
+				}
+			],
+			type: "Pickup"
+		},
+		{
+			id: 3,
+			orders:[
+				{
+					order_id:1,
+					name:"bob",
+					date: new Date(),
+					items:[
+						{
+							dpci:"1",
+							quantity:5,
+							type:"bulky"
+
+						},
+						{
+							dpci:"2",
+							quantity:5,
+							type:"bulky"
+						},
+						{
+							dpci:"3",
+							quantity:5,
+							type:"bulky"
+						}
+					]
+				}
+			],
 			type: "Bulky"
-		},
-		{
-			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
-			type: "Adult Beverage"
-		},	
-		{
-			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
-			type: "Pickup"
-		},
-		{
-			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
-			type: "Pickup"
-		},
-		{
-			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
-			type: "Pickup"
-		},
-		{
-			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
-			type: "Pickup"
-		},
-		{
-			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
-			type: "Pickup"
-		},
-		{
-			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
-			type: "Pickup"
-		},
-		{
-			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
-			type: "Pickup"
-		},
-		{
-			id: 1,
-			time:"00:06",
-			total_items:13,
-			total_dpci:10,
-			type: "Pickup"
 		},
 	]
 	const [openPickup, setOpenPickup] = useState(false);
@@ -112,22 +123,59 @@ const PickupTab = ({work}) => {
 		})
 
 		if(work.length > 0){
-			let dpci = 0;
-			let items = 0;
+			let dpci = new Set();
+			let totalItems = 0;
 			for(let i = 0; i < work.length;i++){
-				dpci+=work[i].total_dpci;
-				items+=work[i].total_items;
+				const orders = work[i].orders
+				console.log(orders, "orders")
+				for(let j = 0; j < orders.length;j++){
+					const items = orders[j].items;
+					console.log(items, "items")
+					
+					for(let k = 0; k < items.length;k++){
+						totalItems+=items[k].quantity;
+						dpci.add(items[k].dpci)
+					}
+				}
+			}
+			const calculateTimeDiff = (date) => {
+				let batchTime = new Date(date);
+				batchTime.setMinutes(batchTime.getMinutes() + 90);
+				let currentTime = new Date()
+				let timeDiff = new Date(batchTime.getTime() - currentTime.getTime());
+				return timeDiff
 			}
 			if(open){
 				return (
 					<>
-						<div className="work-header"><span className="work-name">{type}</span><span>{items}({dpci}) <i className="fas fa-chevron-down chevron" onClick={() => hook(false)}></i></span></div>
+						<div className="work-header"><span className="work-name">{type}</span><span>{dpci.size}({totalItems}) <i className="fas fa-chevron-down chevron" onClick={() => hook(false)}></i></span></div>
 						{work.map((batch, index) => {
+							let batchTotalItems = 0;
+							let batchDpci = new Set();
+							console.log(batch)
+							const orders = batch.orders
+							let shortestTimeLeft = calculateTimeDiff(orders[0].date) ;
+							for(let j = 0; j < orders.length;j++){
+								const items = orders[j].items;
+								let timeDiff = calculateTimeDiff(orders[j].date);
+								if(shortestTimeLeft < timeDiff){
+									timeDiff = shortestTimeLeft;
+								}
+
+								for(let k = 0; k < items.length;k++){
+									batchTotalItems+=items[k].quantity;
+
+									batchDpci.add(items[k].dpci)
+								}
+							}
+							const mins = Math.floor(shortestTimeLeft/(1000 * 60))%60;
+							const hrs = Math.floor(shortestTimeLeft/(1000 * 60 * 60));
+							//const secs = Math.floor(shortestTimeLeft/(1000)) - mins * 60 - hrs * 3600;
 							return (
 								<div className="pickup-row " key = {batch.id+batch.type+index}>
 									<span className ="batch-number"><input type="checkbox"/>{batch.type} {index+1}</span> 
-									<span className="batch-time">{batch.time}</span> 
-									<span className="batch-items">{batch.total_dpci}({batch.total_items})</span>
+									<span className="batch-time">{hrs}:{mins}</span> 
+									<span className="batch-items">{batchDpci.size}({batchTotalItems})</span>
 								</div>
 							)
 						})}
@@ -137,7 +185,7 @@ const PickupTab = ({work}) => {
 			}else {
 				return (
 					<>
-						<div className="work-header"><span className="work-name">{type}</span><span>{items}({dpci}) <i className="fas fa-chevron-right chevron" onClick={() => hook(true)}></i></span></div>
+						<div className="work-header"><span className="work-name">{type}</span><span>{dpci.size}({totalItems}) <i className="fas fa-chevron-right chevron" onClick={() => hook(true)}></i></span></div>
 					</>
 
 				)
