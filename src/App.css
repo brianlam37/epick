@@ -103,16 +103,36 @@
 	padding:0 5px;
 	height:5%;
 }
+.full-open-pickup-row{
+	border-bottom: 1px solid #eee;
+}
+.gray-text {
+	padding: 0px 15px;
+	display: flex;
+	flex-direction: column;
+	color:#ccc;
+
+}
+.gray-text > div {
+	display: flex;
+	padding-top: 15px;
+	justify-content: space-evenly;
+	align-items: flex-start;
+}
+.open-pickup-row {
+	display:flex;
+	justify-content: space-evenly;
+}
 .pickup-row, #pickup-header{
 	display:flex;
 	justify-content: space-evenly;
 	border-bottom: 1px solid #eee;
 
 }
-.pickup-row {
+.pickup-row, .full-open-pickup-row{
 	padding: 15px 15px;	
 }
-.batch-number{
+.batch-number, .batch-name{
 	text-align: left;
 	flex: 2;
 }
@@ -126,6 +146,9 @@
 .batch-items {
 	text-align: right;
 	flex: 1;
+}
+.batch-items > .chevron{
+	padding-left: 3px;
 }
 
 .work-header {
@@ -166,4 +189,5 @@
 
 .chevron {
 	color:#ccc;
+
 }
